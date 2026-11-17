@@ -219,7 +219,45 @@ const supabaseClient = window.supabase.createClient(
     selectorHora.innerHTML = '<option value="">Primero selecciona una fecha</option>';
     selectorHora.disabled = true;
   });
-    const loginAdmin = document.getElementById("loginAdmin");
+    
+
+  const loginAdmin = document.getElementById("loginAdmin");
+
+  if (!loginAdmin) return;
+
+  loginAdmin.addEventListener("submit", async function(evento) {
+    evento.preventDefault();
+
+    const email = document.getElementById("adminEmail").value.trim();
+    const password = document.getElementById("adminPassword").value;
+    const mensajeAdmin = document.getElementById("mensajeAdmin");
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    if (error) {
+      mensajeAdmin.textContent = "Correo o contraseña incorrectos.";
+      return;
+    }
+
+    mensajeAdmin.textContent = "¡Acceso autorizado!";
+  });
+
+});
+</script>
+  <section id="admin-login" style="padding:30px 20px;text-align:center;border-top:1px solid #806a36;">
+  <h2 style="color:#d6b45c;">ACCESO ADMINISTRADOR</h2>
+  <form id="loginAdmin" style="max-width:350px;margin:auto;">
+    <input type="email" id="adminEmail" placeholder="Correo administrador" required>
+    <input type="password" id="adminPassword" placeholder="Contraseña" required>
+    <button class="button" type="submit">INGRESAR</button>
+    <p id="mensajeAdmin" class="details"></p>
+  </form>
+</section>
+  <script>
+const loginAdmin = document.getElementById("loginAdmin");
 
 loginAdmin.addEventListener("submit", async function(evento) {
   evento.preventDefault();
@@ -228,7 +266,7 @@ loginAdmin.addEventListener("submit", async function(evento) {
   const password = document.getElementById("adminPassword").value;
   const mensajeAdmin = document.getElementById("mensajeAdmin");
 
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
+  const { error } = await supabaseClient.auth.signInWithPassword({
     email: email,
     password: password
   });
@@ -241,14 +279,5 @@ loginAdmin.addEventListener("submit", async function(evento) {
   mensajeAdmin.textContent = "¡Acceso autorizado!";
 });
 </script>
-  <section id="admin-login" style="padding:30px 20px;text-align:center;border-top:1px solid #806a36;">
-  <h2 style="color:#d6b45c;">ACCESO ADMINISTRADOR</h2>
-  <form id="loginAdmin" style="max-width:350px;margin:auto;">
-    <input type="email" id="adminEmail" placeholder="Correo administrador" required>
-    <input type="password" id="adminPassword" placeholder="Contraseña" required>
-    <button class="button" type="submit">INGRESAR</button>
-    <p id="mensajeAdmin" class="details"></p>
-  </form>
-</section>
 </body>
 </html>
