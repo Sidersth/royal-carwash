@@ -245,6 +245,7 @@ const supabaseClient = window.supabase.createClient(
     mensajeAdmin.textContent = "¡Acceso autorizado!";
     document.getElementById("panelAdmin").style.display = "block";
 loginAdmin.style.display = "none";
+    cargarReservas();
   });
 
 });
@@ -261,6 +262,7 @@ loginAdmin.style.display = "none";
     <div id="panelAdmin" style="display:none;">
   <h2> PANEL DE ADMINISTRACIÓN </h2>
   <p>Bienvenido a Royal Carwash</p>
+      <div id="listaReservas">Aquí aparecerán las reservas.</div>
   <button class="button" type="button" id="cerrarSesion">
     CERRAR SESIÓN
   </button>
@@ -268,7 +270,42 @@ loginAdmin.style.display = "none";
 </section>
   <script>
 const loginAdmin = document.getElementById("loginAdmin");
+async function cargarReservas() {
+  const lista = document.getElementById("listaReservas");
 
+  lista.textContent = "Cargando reservas...";
+
+  const { data, error } = await supabaseClient
+    .from("reservas")
+    .select("*")
+    .order("fecha", { ascending: true })
+    .order("hora", { ascending: true });
+
+  if (error) {
+    lista.textContent = "No se pudieron cargar las reservas.";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    lista.textContent = "Todavía no hay reservas.";
+    return;
+  }
+
+  lista.innerHTML = "";
+
+  data.forEach(function(reserva) {
+    const elemento = document.createElement("div");
+    elemento.textContent =
+      reserva.nombre_cliente + " | " +
+      reserva.telefono + " | " +
+      reserva.patente + " | " +
+      reserva.fecha + " | " +
+      reserva.hora + " | " +
+      reserva.estado;
+
+    lista.appendChild(elemento);
+  });
+}
 loginAdmin.addEventListener("submit", async function(evento) {
   evento.preventDefault();
 
