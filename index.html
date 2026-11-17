@@ -106,13 +106,119 @@ const supabase = window.supabase.createClient(
     </section>
 
     <section id="reservar">
-      <h2>AGENDA TU RESERVA</h2>
-      <p class="details">Próximamente podrás seleccionar tu día y horario directamente desde aquí.</p>
-    </section>
+  <h2>AGENDA TU RESERVA</h2>
+
+  <div class="service">
+    <form id="formReserva">
+      <p class="details">Nombre completo</p>
+      <input type="text" id="nombre" required placeholder="Tu nombre">
+
+      <p class="details">Teléfono</p>
+      <input type="tel" id="telefono" required placeholder="+56912345678">
+
+      <p class="details">Patente del vehículo</p>
+      <input type="text" id="patente" required placeholder="ABCD12">
+
+      <p class="details">Fecha</p>
+      <input type="date" id="fecha" required>
+
+      <p class="details">Horario disponible</p>
+      <select id="hora" required>
+        <option value="">Primero selecciona una fecha</option>
+      </select>
+
+      <button class="button" type="submit">SOLICITAR RESERVA</button>
+      <p id="mensajeReserva" class="details"></p>
+    </form>
+  </div>
+</section>
   </main>
 
   <footer>
     ROYAL CARWASH · Tu vehículo merece lo mejor.
   </footer>
+  <script>
+  const formulario = document.getElementById("formReserva");
+  const selectorFecha = document.getElementById("fecha");
+  const selectorHora = document.getElementById("hora");
+  const mensaje = document.getElementById("mensajeReserva");
+
+  selectorFecha.addEventListener("change", async function () {
+    const fecha = selectorFecha.value;
+
+    selectorHora.innerHTML = '<option value="">Consultando horarios...</option>';
+    selectorHora.disabled = true;
+
+    const { data, error } = await supabase.rpc(
+      "obtener_horas_disponibles",
+      { p_fecha: fecha }
+    );
+
+    selectorHora.innerHTML = "";
+
+    if (error) {
+      mensaje.textContent = "No pudimos consultar los horarios. Intenta nuevamente.";
+      selectorHora.innerHTML = '<option value="">Error al consultar</option>';
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      selectorHora.innerHTML = '<option value="">No hay horarios disponibles</option>';
+      mensaje.textContent = "No hay horarios disponibles para esa fecha.";
+      return;
+    }
+
+    selectorHora.disabled = false;
+    selectorHora.innerHTML = '<option value="">Selecciona un horario</option>';
+
+    data.forEach(function (item) {
+      const opcion = document.createElement("option");
+      opcion.value = item.hora;
+      opcion.textContent = item.hora.slice(0, 5);
+      selectorHora.appendChild(opcion);
+    });
+
+    mensaje.textContent = "";
+  });
+
+  formulario.addEventListener("submit", async function (evento) {
+    evento.preventDefault();
+
+    const datos = {
+      p_nombre: document.getElementById("nombre").value.trim(),
+      p_telefono: document.getElementById("telefono").value.trim(),
+      p_patente: document.getElementById("patente").value.trim().toUpperCase(),
+      p_fecha: selectorFecha.value,
+      p_hora: selectorHora.value
+    };
+
+    if (!datos.p_hora) {
+      mensaje.textContent = "Selecciona un horario disponible.";
+      return;
+    }
+
+    const boton = formulario.querySelector('button[type="submit"]');
+    boton.disabled = true;
+    boton.textContent = "ENVIANDO...";
+
+    const { data, error } = await supabase.rpc(
+      "crear_reserva",
+      datos
+    );
+
+    boton.disabled = false;
+    boton.textContent = "SOLICITAR RESERVA";
+
+    if (error) {
+      mensaje.textContent = "No se pudo registrar. Puede que ese horario ya esté ocupado. Actualiza la fecha e intenta nuevamente.";
+      return;
+    }
+
+    mensaje.textContent = "¡Solicitud recibida! Tu reserva está pendiente de confirmación.";
+    formulario.reset();
+    selectorHora.innerHTML = '<option value="">Primero selecciona una fecha</option>';
+    selectorHora.disabled = true;
+  });
+</script>
 </body>
 </html>
