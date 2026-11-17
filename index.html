@@ -256,6 +256,8 @@ loginAdmin.style.display = "none";
     <input type="password" id="adminPassword" placeholder="Contraseña" required>
     <button class="button" type="submit">INGRESAR</button>
     <p id="mensajeAdmin" class="details"></p>
+    
+  </form>
     <div id="panelAdmin" style="display:none;">
   <h2> PANEL DE ADMINISTRACIÓN </h2>
   <p>Bienvenido a Royal Carwash</p>
@@ -263,7 +265,6 @@ loginAdmin.style.display = "none";
     CERRAR SESIÓN
   </button>
 </div>
-  </form>
 </section>
   <script>
 const loginAdmin = document.getElementById("loginAdmin");
@@ -286,6 +287,9 @@ loginAdmin.addEventListener("submit", async function(evento) {
   }
 
   mensajeAdmin.textContent = "¡Acceso autorizado!";
+
+document.getElementById("panelAdmin").style.display = "block";
+loginAdmin.style.display = "none";
 });
     document.getElementById("cerrarSesion").addEventListener("click", async function() {
   await supabaseClient.auth.signOut();
