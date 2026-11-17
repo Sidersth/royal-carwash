@@ -286,25 +286,69 @@ async function cargarReservas() {
     return;
   }
 
+  lista.innerHTML = "";
+
   if (!data || data.length === 0) {
     lista.textContent = "Todavía no hay reservas.";
     return;
   }
 
-  lista.innerHTML = "";
-
   data.forEach(function(reserva) {
-    const elemento = document.createElement("div");
-    elemento.textContent =
-      reserva.nombre_cliente + " | " +
-      reserva.telefono + " | " +
-      reserva.patente + " | " +
-      reserva.fecha + " | " +
-      reserva.hora + " | " +
-      reserva.estado;
+    const tarjeta = document.createElement("div");
+    tarjeta.style.border = "1px solid #806a36";
+    tarjeta.style.padding = "15px";
+    tarjeta.style.margin = "12px 0";
+    tarjeta.style.borderRadius = "8px";
 
-    lista.appendChild(elemento);
+    const datos = document.createElement("p");
+
+    datos.textContent =
+      "Cliente: " + reserva.nombre_cliente +
+      " | Teléfono: " + reserva.telefono +
+      " | Patente: " + reserva.patente +
+      " | Fecha: " + reserva.fecha +
+      " | Hora: " + reserva.hora +
+      " | Estado: " + reserva.estado;
+
+    tarjeta.appendChild(datos);
+
+    if (reserva.estado === "pendiente") {
+      const confirmar = document.createElement("button");
+      confirmar.textContent = "CONFIRMAR";
+      confirmar.className = "button";
+
+      confirmar.onclick = async function() {
+        await actualizarReserva(reserva.id, "confirmada");
+      };
+
+      const cancelar = document.createElement("button");
+      cancelar.textContent = "CANCELAR";
+      cancelar.className = "button";
+
+      cancelar.onclick = async function() {
+        await actualizarReserva(reserva.id, "cancelada");
+      };
+
+      tarjeta.appendChild(confirmar);
+      tarjeta.appendChild(cancelar);
+    }
+
+    lista.appendChild(tarjeta);
   });
+}
+    async function actualizarReserva(id, nuevoEstado) {
+  const { error } = await supabaseClient
+    .from("reservas")
+    .update({ estado: nuevoEstado })
+    .eq("id", id);
+
+  if (error) {
+    alert("No se pudo actualizar la reserva: " + error.message);
+    return;
+  }
+
+  alert("Reserva actualizada correctamente.");
+  cargarReservas();
 }
 loginAdmin.addEventListener("submit", async function(evento) {
   evento.preventDefault();
