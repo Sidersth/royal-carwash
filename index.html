@@ -243,6 +243,8 @@ const supabaseClient = window.supabase.createClient(
     }
 
     mensajeAdmin.textContent = "¡Acceso autorizado!";
+    document.getElementById("panelAdmin").style.display = "block";
+loginAdmin.style.display = "none";
   });
 
 });
@@ -254,6 +256,13 @@ const supabaseClient = window.supabase.createClient(
     <input type="password" id="adminPassword" placeholder="Contraseña" required>
     <button class="button" type="submit">INGRESAR</button>
     <p id="mensajeAdmin" class="details"></p>
+    <div id="panelAdmin" style="display:none;">
+  <h2> PANEL DE ADMINISTRACIÓN </h2>
+  <p>Bienvenido a Royal Carwash</p>
+  <button class="button" type="button" id="cerrarSesion">
+    CERRAR SESIÓN
+  </button>
+</div>
   </form>
 </section>
   <script>
@@ -277,6 +286,13 @@ loginAdmin.addEventListener("submit", async function(evento) {
   }
 
   mensajeAdmin.textContent = "¡Acceso autorizado!";
+});
+    document.getElementById("cerrarSesion").addEventListener("click", async function() {
+  await supabaseClient.auth.signOut();
+
+  document.getElementById("panelAdmin").style.display = "none";
+  loginAdmin.style.display = "block";
+  document.getElementById("mensajeAdmin").textContent = "";
 });
 </script>
 </body>
