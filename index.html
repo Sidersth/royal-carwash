@@ -327,6 +327,7 @@ loginAdmin.addEventListener("submit", async function(evento) {
 
 document.getElementById("panelAdmin").style.display = "block";
 loginAdmin.style.display = "none";
+cargarReservas();
 });
     document.getElementById("cerrarSesion").addEventListener("click", async function() {
   await supabaseClient.auth.signOut();
