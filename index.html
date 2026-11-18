@@ -137,7 +137,7 @@ const supabaseClient = window.supabase.createClient(
   <footer>
     ROYAL CARWASH · Tu vehículo merece lo mejor.
   </footer>
-  <script>
+ <script>
   const formulario = document.getElementById("formReserva");
   const selectorFecha = document.getElementById("fecha");
   const selectorHora = document.getElementById("hora");
@@ -219,36 +219,6 @@ const supabaseClient = window.supabase.createClient(
     selectorHora.innerHTML = '<option value="">Primero selecciona una fecha</option>';
     selectorHora.disabled = true;
   });
-    
-
-  const loginAdmin = document.getElementById("loginAdmin");
-
-  if (!loginAdmin) return;
-
-  loginAdmin.addEventListener("submit", async function(evento) {
-    evento.preventDefault();
-
-    const email = document.getElementById("adminEmail").value.trim();
-    const password = document.getElementById("adminPassword").value;
-    const mensajeAdmin = document.getElementById("mensajeAdmin");
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
-
-    if (error) {
-      mensajeAdmin.textContent = "Correo o contraseña incorrectos.";
-      return;
-    }
-
-    mensajeAdmin.textContent = "¡Acceso autorizado!";
-    document.getElementById("panelAdmin").style.display = "block";
-loginAdmin.style.display = "none";
-    cargarReservas();
-  });
-
-});
 </script>
   <section id="admin-login" style="padding:30px 20px;text-align:center;border-top:1px solid #806a36;">
   <h2 style="color:#d6b45c;">ACCESO ADMINISTRADOR</h2>
